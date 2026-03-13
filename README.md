@@ -1,4 +1,9 @@
 # 🐙 Octo-O-Weaver
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/19df8b02-16f8-45fb-8a3f-86005c3de133" alt="Octo-O-Weaver Logo" width="300" />
+</p>
+
 ### Platform-as-a-Service (PaaS) Abstraction Layer for TribeWarez DeFi + PoT-O
 
 *8 tentacles weaving AI, CPU, and Solana DeFi into autonomous agent orchestration*
