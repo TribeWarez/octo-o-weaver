@@ -1,0 +1,63 @@
+{
+  "id": "tribewarez-agent-gen",
+  "name": "TribeWarez Agent Code Generator",
+  "version": "0.1.0",
+  "description": "Generate Solana DeFi + PoT-O agent code using octo-O-weaver crate",
+  "provider": "opencode.ai",
+  "repository": "https://github.com/TribeWarez/octo-o-weaver",
+  "documentation": "https://docs.rs/octo-O-weaver",
+  "crates_io": "https://crates.io/crates/octo-O-weaver",
+  "capabilities": [
+    "generate_yield_farmers",
+    "generate_tensor_miners",
+    "generate_arbitrage_bots",
+    "generate_staking_optimizers",
+    "generate_custom_strategies"
+  ],
+  "supported_languages": ["rust"],
+  "crates_io_package": "octo-O-weaver",
+  "crates_io_version": "0.1.0",
+  "prompts": [
+    {
+      "id": "prompt_001",
+      "name": "yield-farmer",
+      "title": "Yield Farmer Agent",
+      "description": "Generate a complete Solana agent for liquidity yield farming",
+      "ref": "./prompts/yield-farmer.md"
+    },
+    {
+      "id": "prompt_002",
+      "name": "tensor-miner",
+      "title": "Tensor Miner Agent",
+      "description": "Generate a PoT-O tensor proof mining agent",
+      "ref": "./prompts/tensor-miner.md"
+    },
+    {
+      "id": "prompt_003",
+      "name": "liquidity-arbitrage",
+      "title": "Liquidity Arbitrage Bot",
+      "description": "Generate a multi-hop arbitrage detection and execution bot",
+      "ref": "./prompts/liquidity-arbitrage.md"
+    },
+    {
+      "id": "prompt_004",
+      "name": "staking-optimizer",
+      "title": "Staking Reward Optimizer",
+      "description": "Generate an agent for staking optimization with coherence bonuses",
+      "ref": "./prompts/staking-optimizer.md"
+    },
+    {
+      "id": "prompt_005",
+      "name": "custom-strategy",
+      "title": "Custom Strategy Builder",
+      "description": "Generate a custom agent for any TribeWarez strategy",
+      "ref": "./prompts/custom-strategy.md"
+    }
+  ],
+  "examples": [
+    {
+      "prompt": "Create a yield farmer that monitors PPTC/AUMCOIN pools and auto-compounds rewards",
+      "generated_files": ["src/main.rs", "Cargo.toml", "tests/integration.rs"]
+    }
+  ]
+}

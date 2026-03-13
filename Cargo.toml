@@ -1,0 +1,57 @@
+[package]
+name = "octo-O-weaver"
+version = "0.1.0"
+edition = "2021"
+authors = ["TribeWarez"]
+description = "PaaS orchestration layer for TribeWarez DeFi + PoT-O autonomous agents on Solana"
+license = "MIT"
+repository = "https://github.com/TribeWarez/octo-o-weaver"
+homepage = "https://tribewarez.com/octo-O-weaver"
+documentation = "https://docs.rs/octo-O-weaver"
+readme = "README.md"
+keywords = ["solana", "defi", "agents", "automation", "pot-o", "paas"]
+categories = ["network-programming", "development-tools"]
+
+[dependencies]
+pot-o-core = { path = "../core", version = "0.4.0" }
+ai3-lib = { path = "../ai3-lib", version = "0.4.0" }
+pot-o-mining = { path = "../mining", version = "0.4.0" }
+pot-o-extensions = { path = "../extensions", version = "0.4.0" }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tokio = { version = "1.0", features = ["full"] }
+solana-sdk = "1.18"
+solana-client = "1.18"
+borsh = "0.10"
+sha2 = "0.10"
+hex = "0.4"
+
+# Optional: HTTP server feature
+axum = { version = "0.7", optional = true }
+tower-http = { version = "0.5", features = ["cors"], optional = true }
+
+[features]
+default = []
+# Enable HTTP server for PaaS API (optional)
+http-server = ["axum", "tower-http"]
+
+[lib]
+name = "octo_o_weaver"
+path = "src/lib.rs"
+
+[[example]]
+name = "mining_workflow"
+path = "examples/mining_workflow.rs"
+
+[[example]]
+name = "staking_strategy"
+path = "examples/staking_strategy.rs"
+
+[[example]]
+name = "swap_quoting"
+path = "examples/swap_quoting.rs"

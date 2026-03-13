@@ -1,0 +1,58 @@
+---
+# TribeWarez Yield Farmer Agent Skill for OpenClaw
+skill:
+  id: tribewarez-yield-farmer
+  name: "TribeWarez Liquidity Yield Farmer"
+  version: "0.1.0"
+  description: "24/7 autonomous liquidity provision and reward compounding"
+  
+provider:
+  type: octo_o_weaver
+  crate_version: "0.1.0"
+  dependencies:
+    - octo-O-weaver >= 0.1.0
+    - pot-o-core >= 0.4.0
+
+rpc:
+  endpoint: "https://api.mainnet-beta.solana.com"
+  timeout_ms: 30000
+
+agent:
+  heartbeat_interval_ms: 600000  # 10 minutes
+
+triggers:
+  - id: auto_compound
+    type: interval
+    interval_ms: 86400000  # 24 hours
+    action: |
+      Query current pool yields via PoolStrategyManager
+      Claim accumulated rewards from tribewarez-staking
+      Re-deposit rewards back into optimal pool
+      Track compound growth
+    error_handler: alert_and_continue
+    
+  - id: rebalance_on_yield_change
+    type: event
+    event: pool_yield_change > 5_percent
+    action: |
+      Recalculate optimal allocation via PoolStrategyManager
+      Execute rebalancing trades via LiquidityEngine
+      Update deposit amounts
+    error_handler: log_and_skip_rebalance
+    
+  - id: emergency_withdrawal
+    type: manual
+    description: "Operator-triggered emergency exit"
+    action: |
+      Withdraw all liquidity
+      Convert to USDC stablecoin
+      Transfer to safe wallet
+
+wallet_profile: farmer-burner-limited
+
+monitoring:
+  track_metrics:
+    - total_liquidity_provided_usd
+    - rewards_earned_pptc
+    - current_apr_percent
+    - compound_growth_rate

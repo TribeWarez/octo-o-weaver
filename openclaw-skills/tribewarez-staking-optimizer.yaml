@@ -1,0 +1,57 @@
+---
+# TribeWarez Staking Optimizer Agent Skill for OpenClaw
+skill:
+  id: tribewarez-staking-optimizer
+  name: "TribeWarez Staking Reward Optimizer"
+  version: "0.1.0"
+  description: "24/7 autonomous stake allocation and lock-up management"
+  
+provider:
+  type: octo_o_weaver
+  crate_version: "0.1.0"
+  dependencies:
+    - octo-O-weaver >= 0.1.0
+    - pot-o-core >= 0.4.0
+
+rpc:
+  endpoint: "https://api.mainnet-beta.solana.com"
+  timeout_ms: 30000
+
+agent:
+  heartbeat_interval_ms: 300000  # 5 minutes
+
+triggers:
+  - id: rebalance_stakes
+    type: interval
+    interval_ms: 3600000  # 1 hour
+    action: |
+      Query current pool APYs via RewardDistributor
+      Query tensor coherence bonus multipliers
+      Calculate optimal allocation across 7d/30d/90d locks
+      Execute rebalancing via tribewarez-staking + tribewarez-vault
+    error_handler: log_and_retry
+    
+  - id: claim_and_restake
+    type: interval
+    interval_ms: 86400000  # 24 hours
+    action: |
+      Claim all accumulated staking rewards
+      Auto-compound into longest lock (90d) for max multiplier
+    error_handler: continue_next_day
+    
+  - id: coherence_bonus_trigger
+    type: event
+    event: tensor_coherence > 0.80
+    action: |
+      Claim early if near lock expiry
+      Re-stake in highest-multiplier pool
+    error_handler: log_only
+
+wallet_profile: staker-burner-limited
+
+monitoring:
+  track_metrics:
+    - total_staked_pptc
+    - rewards_earned_pptc
+    - avg_lock_multiplier
+    - weighted_apr_percent

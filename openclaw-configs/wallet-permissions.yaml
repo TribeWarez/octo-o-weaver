@@ -1,0 +1,106 @@
+# Wallet Permission Profiles for OpenClaw TribeWarez Agents
+# These define the security boundaries for autonomous agent operations
+
+profiles:
+  # Miner Burner Wallet - Limited permissions for tensor mining
+  miner-burner-limited:
+    description: "Limited permissions for autonomous tensor mining"
+    max_balance: 1_SOL
+    max_tx_size: 500_KB
+    rate_limit:
+      txs_per_minute: 10
+      txs_per_hour: 100
+    
+    allowed_programs:
+      # PoT-O Programs
+      - program: pot-o-mining
+        instructions: [submit_proof, claim_rewards]
+      
+      # Octo-O-Weaver integrations  
+      - program: tribewarez-staking
+        instructions: [stake, unstake, claim_rewards]
+    
+    forbidden_programs:
+      - program: tribewarez-governance
+        instructions: ["*"]
+      - program: system_program
+        instructions: [transfer]
+    
+    transaction_filters:
+      - must_be_one_of:
+          - proof_submission
+          - reward_claim
+      - max_recipients: 5
+      - max_amount_per_tx: 100_PPTC
+    
+    emergency_stop:
+      - condition: failed_transactions > 5_in_a_row
+        action: pause_agent
+      - condition: error_rate > 20_percent
+        action: alert_operator
+
+  # Farmer Burner Wallet - Limited permissions for liquidity farming
+  farmer-burner-limited:
+    description: "Limited permissions for autonomous liquidity farming"
+    max_balance: 2_SOL
+    max_tx_size: 500_KB
+    rate_limit:
+      txs_per_minute: 5
+      txs_per_hour: 30
+    
+    allowed_programs:
+      - program: tribewarez-liquidity
+        instructions: [add_liquidity, remove_liquidity]
+      - program: tribewarez-staking
+        instructions: [stake, claim_rewards]
+      - program: tribewarez-swap
+        instructions: [swap_exact_in]
+    
+    forbidden_programs:
+      - program: tribewarez-governance
+        instructions: ["*"]
+      - program: system_program
+        instructions: [transfer]
+      - program: spl_token
+        instructions: [transfer]  # Only token-2022
+    
+    emergency_stop:
+      - condition: total_liquidity_value < 100_USD
+        action: alert_operator
+      - condition: slippage > 5_percent
+        action: cancel_transaction
+
+  # Staker Burner Wallet - Limited permissions for staking + vault locking
+  staker-burner-limited:
+    description: "Limited permissions for autonomous staking + vault locking"
+    max_balance: 1_SOL
+    max_tx_size: 500_KB
+    rate_limit:
+      txs_per_minute: 3
+      txs_per_hour: 20
+    
+    allowed_programs:
+      - program: tribewarez-staking
+        instructions: ["*"]
+      - program: tribewarez-vault
+        instructions: [create_lock, extend_lock, claim_vested]
+    
+    forbidden_programs:
+      - program: tribewarez-governance
+        instructions: ["*"]
+      - program: tribewarez-swap
+        instructions: ["*"]
+      - program: tribewarez-bridge
+        instructions: ["*"]
+    
+    emergency_stop:
+      - condition: lock_expiry_within_24h
+        action: notify_operator
+      - condition: coherence_bonus_available
+        action: claim_and_restake
+
+# Default configuration for new agents
+defaults:
+  initial_balance: 0.1_SOL
+  alert_on_first_tx: true
+  require_manual_start: true

@@ -1,0 +1,70 @@
+---
+# TribeWarez Tensor Mining Agent Skill for OpenClaw
+skill:
+  id: tribewarez-tensor-miner
+  name: "TribeWarez Tensor Mining Agent"
+  version: "0.1.0"
+  description: "24/7 autonomous PoT-O tensor proof submission with reward claiming"
+  
+provider:
+  type: octo_o_weaver
+  crate_version: "0.1.0"
+  dependencies:
+    - octo-O-weaver >= 0.1.0
+    - pot-o-core >= 0.4.0
+    - ai3-lib >= 0.4.0
+
+rpc:
+  endpoint: "https://api.mainnet-beta.solana.com"
+  timeout_ms: 30000
+  fallback_endpoints:
+    - "https://api.rpcpool.com"
+    - "https://solana-api.projectserum.com"
+
+agent:
+  heartbeat_interval_ms: 300000  # 5 minutes
+  proof_batch_size: 5
+  max_retries: 3
+
+triggers:
+  - id: submit_proofs
+    type: interval
+    interval_ms: 1800000  # 30 minutes
+    action: |
+      Call ProofOrchestrator::submit_proof()
+      with local ai3-lib tensor generation
+    error_handler: log_and_retry
+    
+  - id: claim_rewards
+    type: interval
+    interval_ms: 3600000  # 1 hour
+    action: |
+      Call RewardDistributor::claim_rewards()
+      and auto-stake back into pool
+    error_handler: log_and_continue
+    
+  - id: optimize_on_coherence_spike
+    type: event
+    event: tensor_coherence_increase > 0.15
+    action: |
+      Call TensorNetworkManager::query_metrics()
+      Recalculate proof strategy
+      Submit enhanced proofs immediately
+    error_handler: log_only
+
+wallet_profile: miner-burner-limited
+
+monitoring:
+  track_metrics:
+    - proofs_submitted_count
+    - rewards_earned_pptc
+    - proof_success_rate
+    - avg_proof_quality_score
+    
+  alerts:
+    - type: failure_rate
+      threshold: 10_percent_failed_proofs
+      action: notify_operator
+    - type: reward_milestone
+      threshold: 100_pptc_earned
+      action: notify_operator

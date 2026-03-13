@@ -1,0 +1,30 @@
+[package]
+name = "octo-weaver-yield-farmer"
+version = "0.1.0"
+edition = "2021"
+description = "TribeWarez Yield Farmer Agent - Auto-compounding liquidity strategy"
+authors = ["TribeWarez"]
+
+[dependencies]
+octo-O-weaver = { path = "../../", version = "0.1.0" }
+tokio = { version = "1", features = ["full"] }
+solana-sdk = "1.18"
+solana-client = "1.18"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+chrono = { version = "0.4", features = ["serde"] }
+dotenv = "0.15"
+
+[lib]
+name = "yield_farmer"
+path = "src/lib.rs"
+
+[[bin]]
+name = "yield-farmer"
+path = "src/main.rs"
+
+[tests]
+path = "tests/integration.rs"
